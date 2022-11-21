@@ -1,7 +1,7 @@
 import os
 import pandas as p
 import numpy as np
-import constants as c
+from .constants import BASE_PATH
 
 
 def add_repetitve_columns(final_dataframe):
@@ -128,7 +128,7 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
 def subsets_combi_ratersInColumn(folder_name: str):
     # Demo Path: D:\beans\Neeva\Opeartions\All Ratings Post Audit\Absolute Ratings\discussion_onebox_reddit_stack_quora\discussion_onebox_reddit_stack_quora-Subset1AllRating.csv
     # input('Input File Root Path:')
-    base_path = c.BASE_PATH
+    base_path = BASE_PATH
     file_path = base_path + folder_name
 
     all_files = os.listdir(file_path)

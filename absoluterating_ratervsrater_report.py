@@ -12,6 +12,26 @@ RATERS_INFO = [
         'name': 'All'
     },
     {
+        'emailId': 'eb.neeva.a3@gmail.com',
+        'name': 'Yashika'
+    },
+    {
+        'emailId': 'eb.neeva.a4@gmail.com',
+        'name': 'Krish'
+    },
+    {
+        'emailId': 'eb.neevaa5@gmail.com',
+        'name': 'Jaskaran'
+    },
+    {
+        'emailId': 'eb.neeva.a6@gmail.com',
+        'name': 'Jatin'
+    },
+    {
+        'emailId': 'eb.neeva.a7@gmail.com',
+        'name': 'Rajdeep'
+    },
+    {
         'emailId': 'eb.neeva.a8@gmail.com',
         'name': 'Badal'
     },
@@ -31,6 +51,29 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
     if(rater['emailId'] != 'all'):
         reduced_dataframe = reduced_dataframe[(reduced_dataframe['Rater1_EmailId'] == rater['emailId']) | (
             reduced_dataframe['Rater2_EmailId'] == rater['emailId'])]
+
+    # Create pivot table for difference in raters
+    diff_rater_pivot = reduced_dataframe[(reduced_dataframe['Diff'] > 0)].pivot_table(
+        index=['Diff'],
+        aggfunc={'Diff': np.count_nonzero}
+    )
+    diff_rater_pivot.index.name = "Diff in Raters"
+    diff_rater_pivot = diff_rater_pivot.reset_index()
+    diff_rater_pivot.rename(columns={'Diff': '# Queries'}, inplace=True)
+    x1 = diff_rater_pivot['Diff in Raters']
+    y1 = diff_rater_pivot['# Queries']
+
+    fig2, ax2 = plt.subplots(figsize=CHART_FIGURE_SIZE)
+    plt.bar(x1, y1)
+    plt.title("("+rater['name']+") Count of ratings off by")
+    index = 0
+
+    # Add labels on the chart for better interpretation
+    for i in x1:
+        ax2.text(x1[index], y1[index], y1[index], size='9')
+        index += 1
+
+    # Next Set
 
     # Create pivot table for summary
     pivot_df = reduced_dataframe.pivot_table(
@@ -79,6 +122,8 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
         writer, sheet_name=summary_sheet_name, startcol=1, startrow=0, index=False)
     pivot_df.to_excel(writer, sheet_name=summary_sheet_name,
                       startrow=4, startcol=0, index=False)
+    diff_rater_pivot.to_excel(writer, sheet_name=summary_sheet_name,
+                              startrow=24, startcol=0, index=False)
 
     worksheet = writer.sheets[summary_sheet_name]
 
@@ -86,6 +131,11 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
     imgdata = io.BytesIO()
     fig.savefig(imgdata, format='png')
     worksheet.insert_image('F2', '', {'image_data': imgdata})
+
+    imgdata2 = io.BytesIO()
+    fig2.savefig(imgdata2)
+    worksheet.insert_image('F24', '', {'image_data': imgdata2})
+
     # chart = workbook.add_chart(
     #     {'type': 'line', 'title': 'Rater vs Rater % Diff'})
     # chart.add_series({'values': '=Summary!$D$6:$D$'+str(max_row+5)})
