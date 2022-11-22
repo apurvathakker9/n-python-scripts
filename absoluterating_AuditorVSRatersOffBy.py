@@ -19,7 +19,11 @@ for rater in all_raters:
     rater_data = combined_subsets[(
         combined_subsets['Rater Type'] == 'rater') & (combined_subsets['abspagematch'].notnull()) & (combined_subsets['Rater email'] == rater)]
 
-    rater_data['numpagematch'] = rater_data['abspagematch'].str[:1]
+    rater_pm = rater_data['abspagematch'].str[:1]
+    if(str(rater_data['abspagematch'].str[:2]).isnumeric()):
+        rater_pm = rater_data['abspagematch'].str[:2]
+
+    rater_data['numpagematch'] = rater_pm
     rater_data['auditorrating'] = ''
     rater_data['diff'] = ''
     for ind, r in rater_data.iterrows():

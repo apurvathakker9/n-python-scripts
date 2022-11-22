@@ -167,7 +167,7 @@ def rater_vs_rater_matrix(final_dataframe: p.DataFrame) -> p.DataFrame:
     return matrix_df
 
 
-folder_name = 'discussion_onebox_reddit_stack_quora'
+folder_name = 'discussion_onebox_reddit_stack_quora_v2'
 final_dataframe = combineraters.subsets_combi_ratersInColumn(
     folder_name=folder_name)
 

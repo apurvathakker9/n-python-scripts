@@ -54,6 +54,9 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
 
             index = 1
             for ind, rater in raters.iterrows():
+                pm = rater['abspagematch'][:1]
+                if(str(rater['abspagematch'][1:2]).isnumeric()):
+                    pm = rater['abspagematch'][:2]
                 final_dataframe['Rater' +
                                 str(index)+'_Name'].append(rater['Rater Name'])
                 final_dataframe['Rater' +
@@ -69,7 +72,7 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
                 final_dataframe['Rater' +
                                 str(index)+'_PageQuality'].append(rater['abspagequality'])
                 final_dataframe['Rater' +
-                                str(index)+'_PageMatch'].append(rater['abspagematch'][:1])
+                                str(index)+'_PageMatch'].append(pm)
                 final_dataframe['Rater' +
                                 str(index)+'_QueryRatedOn'].append(rater['Query Rated On'])
                 final_dataframe['Rater' +
@@ -103,6 +106,10 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
                 final_dataframe['Auditor_ResultRatedOn'].append('')
             else:
                 for ind, auditor in auditors.iterrows():
+                    pm = auditor['abspagematch'][:1]
+                    if(str(auditor['abspagematch'][1:2]).isnumeric()):
+                        pm = auditor['abspagematch'][:2]
+
                     final_dataframe['Auditor_Name'].append(
                         auditor['Rater Name'])
                     final_dataframe['Auditor_EmailId'].append(
@@ -118,7 +125,7 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
                     final_dataframe['Auditor_PageQuality'].append(
                         auditor['abspagequality'])
                     final_dataframe['Auditor_PageMatch'].append(
-                        auditor['abspagematch'][:1])
+                        pm)
                     final_dataframe['Auditor_QueryRatedOn'].append(
                         auditor['Query Rated On'])
                     final_dataframe['Auditor_ResultRatedOn'].append(
