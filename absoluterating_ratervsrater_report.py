@@ -3,43 +3,9 @@ import pandas as p
 import numpy as np
 import matplotlib.pyplot as plt
 import io
+from libs.constants import RATERS_INFO, ALL_TEAM
 
 CHART_FIGURE_SIZE = (6, 4)
-
-RATERS_INFO = [
-    {
-        'emailId': 'all',
-        'name': 'All'
-    },
-    {
-        'emailId': 'eb.neeva.a3@gmail.com',
-        'name': 'Yashika'
-    },
-    {
-        'emailId': 'eb.neeva.a4@gmail.com',
-        'name': 'Krish'
-    },
-    {
-        'emailId': 'eb.neevaa5@gmail.com',
-        'name': 'Jaskaran'
-    },
-    {
-        'emailId': 'eb.neeva.a6@gmail.com',
-        'name': 'Jatin'
-    },
-    {
-        'emailId': 'eb.neeva.a7@gmail.com',
-        'name': 'Rajdeep'
-    },
-    {
-        'emailId': 'eb.neeva.a8@gmail.com',
-        'name': 'Badal'
-    },
-    {
-        'emailId': 'eb.neeva.a9@gmail.com',
-        'name': 'Deepak'
-    }
-]
 
 
 def get_output(final_dataframe: p.DataFrame, rater, writer):
@@ -118,12 +84,17 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
     summary_sheet_name = rater['name']+'-Summary'
     logs_sheet_name = rater['name']+'-Logs'
 
+    # Dynamically get the
+    start_row_diff_rater = (pivot_df.shape[0] + 4 if pivot_df.shape[0]
+                            > CHART_FIGURE_SIZE[0]*4 else CHART_FIGURE_SIZE[0]*4) + 2
+
     p.DataFrame(summary_df).to_excel(
         writer, sheet_name=summary_sheet_name, startcol=1, startrow=0, index=False)
     pivot_df.to_excel(writer, sheet_name=summary_sheet_name,
                       startrow=4, startcol=0, index=False)
+
     diff_rater_pivot.to_excel(writer, sheet_name=summary_sheet_name,
-                              startrow=24, startcol=0, index=False)
+                              startrow=start_row_diff_rater, startcol=0, index=False)
 
     worksheet = writer.sheets[summary_sheet_name]
 
@@ -134,7 +105,8 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
 
     imgdata2 = io.BytesIO()
     fig2.savefig(imgdata2)
-    worksheet.insert_image('F24', '', {'image_data': imgdata2})
+    worksheet.insert_image(
+        'F' + str(start_row_diff_rater), '', {'image_data': imgdata2})
 
     # chart = workbook.add_chart(
     #     {'type': 'line', 'title': 'Rater vs Rater % Diff'})
@@ -146,10 +118,61 @@ def get_output(final_dataframe: p.DataFrame, rater, writer):
         writer, sheet_name=logs_sheet_name, index=False)
 
 
-folder_name = 'discussion_onebox_reddit_stack_quora_v2'
+def rater_vs_rater_matrix(final_dataframe: p.DataFrame) -> p.DataFrame:
+    raters_list = RATERS_INFO.copy()
+    rater_names = []
+    rater_to_remove = None
+    for rater in raters_list:
+        if(rater['name']) != 'All':
+            rater_names.append(rater['name'])
+        else:
+            rater_to_remove = rater
+
+    if rater_to_remove:
+        raters_list.remove(rater_to_remove)
+
+    matrix_df = p.DataFrame(columns=['', *rater_names], index=[''])
+
+    for rater in raters_list:
+        rater1_email = rater['emailId']
+        rater1_name = rater['name']
+
+        obj = {}
+        obj[''] = rater1_name
+
+        for rater2 in ALL_TEAM:
+            rater2_email = rater2['emailId']
+            rater2_name = rater2['name']
+            resultant_df = final_dataframe[((final_dataframe['Rater1_EmailId'] == rater1_email) & (
+                final_dataframe['Rater2_EmailId'] == rater2_email)) | ((final_dataframe['Rater1_EmailId'] == rater2_email) & (
+                    final_dataframe['Rater2_EmailId'] == rater1_email))]
+
+            total_queries = resultant_df.shape[0]
+            diff_queries = resultant_df[(resultant_df['Diff'] != 0)].shape[0]
+
+            output_str = ''
+            if total_queries > 0:
+                diff_per = str(
+                    round((diff_queries/total_queries)*100, 0)) + '%'
+                output_str = str(diff_queries) + '/' + \
+                    str(total_queries) + ' (' + diff_per + ')'
+
+            obj[rater2_name] = output_str
+
+        # print(p.DataFrame(obj, index=['']))
+        # print(matrix_df)
+        matrix_df = p.concat([matrix_df, p.DataFrame(obj, index=[''])])
+
+    matrix_df = matrix_df[1:]
+    return matrix_df
+
+
+folder_name = 'discussion_onebox_reddit_stack_quora'
 final_dataframe = combineraters.subsets_combi_ratersInColumn(
     folder_name=folder_name)
 
 with p.ExcelWriter(folder_name+'.xlsx', engine="xlsxwriter") as writer:
+    rater_vs_rater_matrix(final_dataframe=final_dataframe).to_excel(
+        writer, sheet_name="Raters Matrix", index=False)
     for rater in RATERS_INFO:
         get_output(final_dataframe=final_dataframe, rater=rater, writer=writer)
