@@ -1,4 +1,5 @@
-raters = ['Yashika', 'Krish', 'Jaskaran', 'Jatin', 'Rajdeep']
+raters = ['Yashika', 'Krish', 'Jaskaran',
+          'Jatin', 'Rajdeep', 'Badal', 'Deepak']
 
 raterCombinations = []
 
@@ -17,11 +18,11 @@ for rater in raters:
     raterCombinations.append(combi)
     index += 1
 
-totalIterations = 25
+totalIterations = 26
 start = 0
 
 initialIndex = 0
-ratersCombiIndex = 2
+ratersCombiIndex = 7
 output = []
 while start <= totalIterations:
 

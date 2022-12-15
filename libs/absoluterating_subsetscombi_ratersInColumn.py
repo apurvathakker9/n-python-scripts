@@ -4,6 +4,38 @@ import numpy as np
 from .constants import BASE_PATH
 
 
+def print_final_data_frame():
+    print('Queryset ', final_dataframe['QuerySet'].__len__())
+    print('SubsetId ', final_dataframe['SubsetId'].__len__())
+    print('Query ', final_dataframe['Query'].__len__())
+    print('Url ', final_dataframe['Url'].__len__())
+    for i in range(1, 4):
+        print('Rater'+str(i)+'_Name',
+              final_dataframe['Rater'+str(i)+'_Name'].__len__())
+        print('Rater'+str(i)+'_EmailId',
+              final_dataframe['Rater'+str(i)+'_EmailId'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_UserIntent'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_Ambiguity'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_Hardness'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_Comfort'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_PageQuality'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_PageMatch'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_QueryRatedOn'].__len__())
+        print(final_dataframe['Rater'+str(i)+'_ResultRatedOn'].__len__())
+
+    print('Auditor_Name', final_dataframe['Auditor_Name'].__len__())
+    print(final_dataframe['Auditor_EmailId'].__len__())
+    print(final_dataframe['Auditor_UserIntent'].__len__())
+    print(final_dataframe['Auditor_Ambiguity'].__len__())
+    print(final_dataframe['Auditor_Hardness'].__len__())
+    print(final_dataframe['Auditor_Comfort'].__len__())
+    print(final_dataframe['Auditor_PageQuality'].__len__())
+    print(final_dataframe['Auditor_PageMatch'].__len__())
+    print(final_dataframe['Auditor_QueryRatedOn'].__len__())
+    print(final_dataframe['Auditor_ResultRatedOn'].__len__())
+    pass
+
+
 def add_repetitve_columns(final_dataframe):
     for i in range(1, 4):
         final_dataframe['Rater'+str(i)+'_Name'] = []
@@ -79,6 +111,10 @@ def spread_csv_sheet(absoluteratings: p.DataFrame):
                                 str(index)+'_ResultRatedOn'].append(rater['Result Rated On'])
                 index += 1
 
+            # This is to debug in case the second rater misses a rating.
+            if index == 2:
+                print(query, result)
+
             if index == 3:
                 final_dataframe['Rater3_Name'].append('')
                 final_dataframe['Rater3_EmailId'].append('')
@@ -144,6 +180,8 @@ def subsets_combi_ratersInColumn(folder_name: str):
         abs_path = file_path+"/"+single_file
         absoluteratings = p.read_csv(abs_path)
         spread_csv_sheet(absoluteratings=absoluteratings)
+
+    # print_final_data_frame()
 
     export_dataframe = p.DataFrame(final_dataframe)
     export_dataframe['Diff'] = export_dataframe.apply(lambda row: abs(

@@ -10,112 +10,117 @@ CHART_FIGURE_SIZE = (6, 4)
 
 def get_output(final_dataframe: p.DataFrame, rater, writer):
 
-    # Copy the original dataframe so that the changes do not affect
-    reduced_dataframe = final_dataframe.copy()
+    try:
+        # Copy the original dataframe so that the changes do not affect
+        reduced_dataframe = final_dataframe.copy()
 
-    # filter by email if required
-    if(rater['emailId'] != 'all'):
-        reduced_dataframe = reduced_dataframe[(reduced_dataframe['Rater1_EmailId'] == rater['emailId']) | (
-            reduced_dataframe['Rater2_EmailId'] == rater['emailId'])]
+        # filter by email if required
+        if(rater['emailId'] != 'all'):
+            reduced_dataframe = reduced_dataframe[(reduced_dataframe['Rater1_EmailId'] == rater['emailId']) | (
+                reduced_dataframe['Rater2_EmailId'] == rater['emailId'])]
 
-    # Create pivot table for difference in raters
-    diff_rater_pivot = reduced_dataframe[(reduced_dataframe['Diff'] > 0)].pivot_table(
-        index=['Diff'],
-        aggfunc={'Diff': np.count_nonzero}
-    )
-    diff_rater_pivot.index.name = "Diff in Raters"
-    diff_rater_pivot = diff_rater_pivot.reset_index()
-    diff_rater_pivot.rename(columns={'Diff': '# Queries'}, inplace=True)
-    x1 = diff_rater_pivot['Diff in Raters']
-    y1 = diff_rater_pivot['# Queries']
+        # Create pivot table for difference in raters
+        diff_rater_pivot = reduced_dataframe[(reduced_dataframe['Diff'] > 0)].pivot_table(
+            index=['Diff'],
+            aggfunc={'Diff': np.count_nonzero}
+        )
+        diff_rater_pivot.index.name = "Diff in Raters"
+        diff_rater_pivot = diff_rater_pivot.reset_index()
+        diff_rater_pivot.rename(columns={'Diff': '# Queries'}, inplace=True)
 
-    fig2, ax2 = plt.subplots(figsize=CHART_FIGURE_SIZE)
-    plt.bar(x1, y1)
-    plt.title("("+rater['name']+") Count of ratings off by")
-    index = 0
+        x1 = diff_rater_pivot['Diff in Raters']
+        y1 = diff_rater_pivot['# Queries']
 
-    # Add labels on the chart for better interpretation
-    for i in x1:
-        ax2.text(x1[index], y1[index], y1[index], size='9')
-        index += 1
+        fig2, ax2 = plt.subplots(figsize=CHART_FIGURE_SIZE)
+        plt.bar(x1, y1)
+        plt.title("("+rater['name']+") Count of ratings off by")
+        index = 0
 
-    # Next Set
+        # Add labels on the chart for better interpretation
+        for i in x1:
+            ax2.text(x1[index], y1[index], y1[index], size='9')
+            index += 1
 
-    # Create pivot table for summary
-    pivot_df = reduced_dataframe.pivot_table(
-        values=['Diff'], index=['SubsetId'],
-        aggfunc={'SubsetId': np.count_nonzero, 'Diff': np.count_nonzero}
-    )
-    pivot_df.index.name = 'Subsets'
-    pivot_df = pivot_df.reset_index()
-    pivot_df['% Diff'] = pivot_df['Diff'] / pivot_df['SubsetId']
-    pivot_df['% Diff'] = (pivot_df['% Diff'] * 100).round(0)
+        # Next Set
 
-    pivot_df.rename(columns={'SubsetId': '# Queries',
-                    'Diff': '# Diff'}, inplace=True)
-    pivot_df = pivot_df[['Subsets', '# Queries', '# Diff', '% Diff']]
+        # Create pivot table for summary
+        pivot_df = reduced_dataframe.pivot_table(
+            values=['Diff'], index=['SubsetId'],
+            aggfunc={'SubsetId': np.count_nonzero, 'Diff': np.count_nonzero}
+        )
+        pivot_df.index.name = 'Subsets'
+        pivot_df = pivot_df.reset_index()
+        pivot_df['% Diff'] = pivot_df['Diff'] / pivot_df['SubsetId']
+        pivot_df['% Diff'] = (pivot_df['% Diff'] * 100).round(0)
 
-    x = pivot_df['Subsets']
-    y = pivot_df['% Diff']
+        pivot_df.rename(columns={'SubsetId': '# Queries',
+                        'Diff': '# Diff'}, inplace=True)
+        pivot_df = pivot_df[['Subsets', '# Queries', '# Diff', '% Diff']]
 
-    fig, ax = plt.subplots(figsize=CHART_FIGURE_SIZE)
-    plt.plot(x, y, marker='o')
-    plt.xlabel("Subsets")
-    plt.ylabel("Diff %")
-    plt.title("("+rater['name']+") Rater vs Rater Diff % in Subsets")
-    index = 0
+        x = pivot_df['Subsets']
+        y = pivot_df['% Diff']
 
-    # Add labels on the chart for better interpretation
-    for i in x:
-        ax.text(x[index], y[index], str(y[index])+'%', size='9')
-        index += 1
+        fig, ax = plt.subplots(figsize=CHART_FIGURE_SIZE)
+        plt.plot(x, y, marker='o')
+        plt.xlabel("Subsets")
+        plt.ylabel("Diff %")
+        plt.title("("+rater['name']+") Rater vs Rater Diff % in Subsets")
+        index = 0
 
-    # Convert % diff from numbers to %. The % value is in string.
-    pivot_df['% Diff'] = (pivot_df['% Diff'].astype(str) + '%')
+        # Add labels on the chart for better interpretation
+        for i in x:
+            ax.text(x[index], y[index], str(y[index])+'%', size='9')
+            index += 1
 
-    # Calculate overall summary
-    summary_df = {'Total Queries': [], 'Total Differences': [], '% Diff': []}
-    summary_df['Total Queries'].append(pivot_df['# Queries'].sum())
-    summary_df['Total Differences'].append(pivot_df['# Diff'].sum())
-    summary_df['% Diff'].append(
-        str(((summary_df['Total Differences'][0]/summary_df['Total Queries'][0])*100).round(0)) + '%')
+        # Convert % diff from numbers to %. The % value is in string.
+        pivot_df['% Diff'] = (pivot_df['% Diff'].astype(str) + '%')
 
-    # Dynamically compute sheet names
-    summary_sheet_name = rater['name']+'-Summary'
-    logs_sheet_name = rater['name']+'-Logs'
+        # Calculate overall summary
+        summary_df = {'Total Queries': [],
+                      'Total Differences': [], '% Diff': []}
+        summary_df['Total Queries'].append(pivot_df['# Queries'].sum())
+        summary_df['Total Differences'].append(pivot_df['# Diff'].sum())
+        summary_df['% Diff'].append(
+            str(((summary_df['Total Differences'][0]/summary_df['Total Queries'][0])*100).round(0)) + '%')
 
-    # Dynamically get the
-    start_row_diff_rater = (pivot_df.shape[0] + 4 if pivot_df.shape[0]
-                            > CHART_FIGURE_SIZE[0]*4 else CHART_FIGURE_SIZE[0]*4) + 2
+        # Dynamically compute sheet names
+        summary_sheet_name = rater['name']+'-Summary'
+        logs_sheet_name = rater['name']+'-Logs'
 
-    p.DataFrame(summary_df).to_excel(
-        writer, sheet_name=summary_sheet_name, startcol=1, startrow=0, index=False)
-    pivot_df.to_excel(writer, sheet_name=summary_sheet_name,
-                      startrow=4, startcol=0, index=False)
+        # Dynamically get the
+        start_row_diff_rater = (pivot_df.shape[0] + 4 if pivot_df.shape[0]
+                                > CHART_FIGURE_SIZE[0]*4 else CHART_FIGURE_SIZE[0]*4) + 2
 
-    diff_rater_pivot.to_excel(writer, sheet_name=summary_sheet_name,
-                              startrow=start_row_diff_rater, startcol=0, index=False)
+        p.DataFrame(summary_df).to_excel(
+            writer, sheet_name=summary_sheet_name, startcol=1, startrow=0, index=False)
+        pivot_df.to_excel(writer, sheet_name=summary_sheet_name,
+                          startrow=4, startcol=0, index=False)
 
-    worksheet = writer.sheets[summary_sheet_name]
+        diff_rater_pivot.to_excel(writer, sheet_name=summary_sheet_name,
+                                  startrow=start_row_diff_rater, startcol=0, index=False)
 
-    # Save pyplot chart image to excel
-    imgdata = io.BytesIO()
-    fig.savefig(imgdata, format='png')
-    worksheet.insert_image('F2', '', {'image_data': imgdata})
+        worksheet = writer.sheets[summary_sheet_name]
 
-    imgdata2 = io.BytesIO()
-    fig2.savefig(imgdata2)
-    worksheet.insert_image(
-        'F' + str(start_row_diff_rater), '', {'image_data': imgdata2})
+        # Save pyplot chart image to excel
+        imgdata = io.BytesIO()
+        fig.savefig(imgdata, format='png')
+        worksheet.insert_image('F2', '', {'image_data': imgdata})
 
-    # chart = workbook.add_chart(
-    #     {'type': 'line', 'title': 'Rater vs Rater % Diff'})
-    # chart.add_series({'values': '=Summary!$D$6:$D$'+str(max_row+5)})
+        imgdata2 = io.BytesIO()
+        fig2.savefig(imgdata2)
+        worksheet.insert_image(
+            'F' + str(start_row_diff_rater), '', {'image_data': imgdata2})
 
-    # worksheet.insert_chart('G7', chart)
+        # chart = workbook.add_chart(
+        #     {'type': 'line', 'title': 'Rater vs Rater % Diff'})
+        # chart.add_series({'values': '=Summary!$D$6:$D$'+str(max_row+5)})
 
-    reduced_dataframe.to_excel(
-        writer, sheet_name=logs_sheet_name, index=False)
+        # worksheet.insert_chart('G7', chart)
+
+        reduced_dataframe.to_excel(
+            writer, sheet_name=logs_sheet_name, index=False)
+    except:
+        print('Error Occured: ', rater)
 
 
 def rater_vs_rater_matrix(final_dataframe: p.DataFrame) -> p.DataFrame:
@@ -167,7 +172,7 @@ def rater_vs_rater_matrix(final_dataframe: p.DataFrame) -> p.DataFrame:
     return matrix_df
 
 
-folder_name = 'discussion_onebox_reddit_stack_quora_v2'
+folder_name = 'rater_vs_rater'
 final_dataframe = combineraters.subsets_combi_ratersInColumn(
     folder_name=folder_name)
 

@@ -3,7 +3,7 @@ import pandas as p
 import numpy as n
 
 
-folder_name = 'discussion_onebox_reddit_stack_quora_v2'
+folder_name = 'rater_vs_rater'
 combined_subsets = absoluterating_subsetscombi.subsheetscombi(
     folder_name=folder_name)
 
@@ -50,7 +50,7 @@ for rater in all_raters:
 
     raterwise_data[rater] = rater_data
 
-with p.ExcelWriter(folder_name+'.xlsx') as writer:
+with p.ExcelWriter('auditor_vs_rater.xlsx') as writer:
     auditor_data.to_excel(writer, sheet_name="Auditor", index=False)
     for rater in all_raters:
         index_at = rater.index('@')

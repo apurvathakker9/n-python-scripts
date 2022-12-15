@@ -1,4 +1,5 @@
 BASE_PATH = 'D:/Projects/Neeva/Opeartions/All Ratings Post Audit/Absolute Ratings/'
+SXS_BASE_PATH = 'D:/Projects/Neeva/Opeartions/All Ratings Post Audit/SxS/'
 
 
 # New team members should be added in both the variables.
