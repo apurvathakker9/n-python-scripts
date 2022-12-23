@@ -13,26 +13,10 @@ def print_final_dataframe():
         print('Rater'+str(i)+'_EmailId',
               final_dataframe['Rater'+str(i)+'_EmailId'].__len__())
         print(final_dataframe['Rater'+str(i)+'_Score'].__len__())
-        print(final_dataframe['Rater'+str(i) +
-              '_RelevantFirstRankLeft'].__len__())
-        print(final_dataframe['Rater'+str(i) +
-              '_RelevantFirstRankRight'].__len__())
-        print(final_dataframe['Rater'+str(i)+'_Officialness'].__len__())
-        print(final_dataframe['Rater'+str(i)+'_Ambiguity'].__len__())
-        print(final_dataframe['Rater'+str(i)+'_Comfort'].__len__())
-        print(final_dataframe['Rater'+str(i)+'_Hardness'].__len__())
-        print(final_dataframe['Rater'+str(i)+'_RatingsRatedOn'].__len__())
 
     print('Auditor_Name', final_dataframe['Auditor_Name'].__len__())
     print(final_dataframe['Auditor_EmailId'].__len__())
     print(final_dataframe['Auditor_Score'].__len__())
-    print(final_dataframe['Auditor_RelevantFirstRankLeft'].__len__())
-    print(final_dataframe['Auditor_RelevantFirstRankRight'].__len__())
-    print(final_dataframe['Auditor_Officialness'].__len__())
-    print(final_dataframe['Auditor_Ambiguity'].__len__())
-    print(final_dataframe['Auditor_Comfort'].__len__())
-    print(final_dataframe['Auditor_Hardness'].__len__())
-    print(final_dataframe['Auditor_RatingsRatedOn'].__len__())
 
 
 def add_repetitve_columns(final_dataframe):
@@ -40,24 +24,24 @@ def add_repetitve_columns(final_dataframe):
         final_dataframe['Rater'+str(i)+'_Name'] = []
         final_dataframe['Rater'+str(i)+'_EmailId'] = []
         final_dataframe['Rater'+str(i)+'_Score'] = []
-        final_dataframe['Rater'+str(i)+'_RelevantFirstRankLeft'] = []
-        final_dataframe['Rater'+str(i)+'_RelevantFirstRankRight'] = []
-        final_dataframe['Rater'+str(i)+'_Officialness'] = []
-        final_dataframe['Rater'+str(i)+'_Ambiguity'] = []
-        final_dataframe['Rater'+str(i)+'_Comfort'] = []
-        final_dataframe['Rater'+str(i)+'_Hardness'] = []
-        final_dataframe['Rater'+str(i)+'_RatingsRatedOn'] = []
+        # final_dataframe['Rater'+str(i)+'_RelevantFirstRankLeft'] = []
+        # final_dataframe['Rater'+str(i)+'_RelevantFirstRankRight'] = []
+        # final_dataframe['Rater'+str(i)+'_Officialness'] = []
+        # final_dataframe['Rater'+str(i)+'_Ambiguity'] = []
+        # final_dataframe['Rater'+str(i)+'_Comfort'] = []
+        # final_dataframe['Rater'+str(i)+'_Hardness'] = []
+        # final_dataframe['Rater'+str(i)+'_RatingsRatedOn'] = []
 
     final_dataframe['Auditor_Name'] = []
     final_dataframe['Auditor_EmailId'] = []
     final_dataframe['Auditor_Score'] = []
-    final_dataframe['Auditor_RelevantFirstRankLeft'] = []
-    final_dataframe['Auditor_RelevantFirstRankRight'] = []
-    final_dataframe['Auditor_Officialness'] = []
-    final_dataframe['Auditor_Ambiguity'] = []
-    final_dataframe['Auditor_Comfort'] = []
-    final_dataframe['Auditor_Hardness'] = []
-    final_dataframe['Auditor_RatingsRatedOn'] = []
+    # final_dataframe['Auditor_RelevantFirstRankLeft'] = []
+    # final_dataframe['Auditor_RelevantFirstRankRight'] = []
+    # final_dataframe['Auditor_Officialness'] = []
+    # final_dataframe['Auditor_Ambiguity'] = []
+    # final_dataframe['Auditor_Comfort'] = []
+    # final_dataframe['Auditor_Hardness'] = []
+    # final_dataframe['Auditor_RatingsRatedOn'] = []
 
 
 final_dataframe = {
@@ -66,21 +50,6 @@ final_dataframe = {
 }
 
 add_repetitve_columns(final_dataframe=final_dataframe)
-
-
-def get_num_score(score: str):
-    if score == 'equal':
-        return 0
-    elif score == 'better':
-        return 1
-    elif score == 'much better':
-        return 2
-    elif score == 'worse':
-        return -1
-    elif score == 'much worse':
-        return -2
-
-    return ''
 
 
 def spread_csv_sheet(sxs_ratings: p.DataFrame):
@@ -96,40 +65,33 @@ def spread_csv_sheet(sxs_ratings: p.DataFrame):
             for ind, rater in raters.iterrows():
                 if index == 3:
                     break
-                score = get_num_score(rater['aggregated score'])
+                score = rater['aggregated score']
                 final_dataframe['Rater' +
                                 str(index)+'_Name'].append(rater['Rater Name'])
                 final_dataframe['Rater' +
                                 str(index)+'_EmailId'].append(rater['Rater email'])
                 final_dataframe['Rater' +
                                 str(index)+'_Score'].append(score)
-                final_dataframe['Rater' +
-                                str(index)+'_RelevantFirstRankLeft'].append(rater['rank_first_relevant_left'])
-                final_dataframe['Rater' +
-                                str(index)+'_RelevantFirstRankRight'].append(rater['rank_first_relevant_right'])
-                final_dataframe['Rater' +
-                                str(index)+'_Officialness'].append(rater['officialness'])
-                final_dataframe['Rater' +
-                                str(index)+'_Ambiguity'].append(rater['ambiguity'])
-                final_dataframe['Rater' +
-                                str(index)+'_Comfort'].append(rater['comfort'])
-                final_dataframe['Rater' +
-                                str(index)+'_Hardness'].append(rater['hardness'])
-                final_dataframe['Rater' +
-                                str(index)+'_RatingsRatedOn'].append(rater['Ratings Rated On'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_RelevantFirstRankLeft'].append(rater['rank_first_relevant_left'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_RelevantFirstRankRight'].append(rater['rank_first_relevant_right'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_Officialness'].append(rater['officialness'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_Ambiguity'].append(rater['ambiguity'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_Comfort'].append(rater['comfort'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_Hardness'].append(rater['hardness'])
+                # final_dataframe['Rater' +
+                #                 str(index)+'_RatingsRatedOn'].append(rater['Ratings Rated On'])
                 index += 1
 
             if index == 2:
                 final_dataframe['Rater2_Name'].append('')
                 final_dataframe['Rater2_EmailId'].append('')
                 final_dataframe['Rater2_Score'].append('')
-                final_dataframe['Rater2_RelevantFirstRankLeft'].append('')
-                final_dataframe['Rater2_RelevantFirstRankRight'].append('')
-                final_dataframe['Rater2_Officialness'].append('')
-                final_dataframe['Rater2_Ambiguity'].append('')
-                final_dataframe['Rater2_Comfort'].append('')
-                final_dataframe['Rater2_Hardness'].append('')
-                final_dataframe['Rater2_RatingsRatedOn'].append('')
 
             auditors = sxs_ratings[(sxs_ratings['Query'] == query) & (sxs_ratings['Rater Type']
                                                                       == 'auditor') & sxs_ratings['aggregated score'].notnull()]
@@ -137,40 +99,40 @@ def spread_csv_sheet(sxs_ratings: p.DataFrame):
                 final_dataframe['Auditor_Name'].append('')
                 final_dataframe['Auditor_EmailId'].append('')
                 final_dataframe['Auditor_Score'].append('')
-                final_dataframe['Auditor_RelevantFirstRankLeft'].append('')
-                final_dataframe['Auditor_RelevantFirstRankRight'].append('')
-                final_dataframe['Auditor_Officialness'].append('')
-                final_dataframe['Auditor_Ambiguity'].append('')
-                final_dataframe['Auditor_Hardness'].append('')
-                final_dataframe['Auditor_Comfort'].append('')
-                final_dataframe['Auditor_RatingsRatedOn'].append('')
+                # final_dataframe['Auditor_RelevantFirstRankLeft'].append('')
+                # final_dataframe['Auditor_RelevantFirstRankRight'].append('')
+                # final_dataframe['Auditor_Officialness'].append('')
+                # final_dataframe['Auditor_Ambiguity'].append('')
+                # final_dataframe['Auditor_Hardness'].append('')
+                # final_dataframe['Auditor_Comfort'].append('')
+                # final_dataframe['Auditor_RatingsRatedOn'].append('')
             else:
                 audit_index = 0
                 for ind, auditor in auditors.iterrows():
                     if audit_index < 1:
-                        score = get_num_score(rater['aggregated score'])
+                        score = auditor['aggregated score']
 
                         final_dataframe['Auditor_Name'].append(
                             auditor['Rater Name'])
                         final_dataframe['Auditor_EmailId'].append(
                             auditor['Rater email'])
                         final_dataframe['Auditor_Score'].append(score)
-                        final_dataframe['Auditor_RelevantFirstRankLeft'].append(
-                            auditor['rank_first_relevant_left'])
-                        final_dataframe['Auditor_RelevantFirstRankRight'].append(
-                            auditor['rank_first_relevant_right'])
+                        # final_dataframe['Auditor_RelevantFirstRankLeft'].append(
+                        #     auditor['rank_first_relevant_left'])
+                        # final_dataframe['Auditor_RelevantFirstRankRight'].append(
+                        #     auditor['rank_first_relevant_right'])
 
-                        final_dataframe['Auditor_Officialness'].append(
-                            auditor['officialness'])
+                        # final_dataframe['Auditor_Officialness'].append(
+                        #     auditor['officialness'])
 
-                        final_dataframe['Auditor_Ambiguity'].append(
-                            auditor['ambiguity'])
-                        final_dataframe['Auditor_Hardness'].append(
-                            auditor['hardness'])
-                        final_dataframe['Auditor_Comfort'].append(
-                            auditor['comfort'])
-                        final_dataframe['Auditor_RatingsRatedOn'].append(
-                            auditor['Ratings Rated On'])
+                        # final_dataframe['Auditor_Ambiguity'].append(
+                        #     auditor['ambiguity'])
+                        # final_dataframe['Auditor_Hardness'].append(
+                        #     auditor['hardness'])
+                        # final_dataframe['Auditor_Comfort'].append(
+                        #     auditor['comfort'])
+                        # final_dataframe['Auditor_RatingsRatedOn'].append(
+                        #     auditor['Ratings Rated On'])
                     audit_index += 1
 
 
